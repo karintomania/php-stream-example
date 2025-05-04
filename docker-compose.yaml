@@ -1,0 +1,12 @@
+services:
+  php:
+    build:
+      context: .
+      dockerfile: Dockerfile 
+      target: dev
+    container_name: my-php-app
+    volumes:
+      - .:/app  # Mounts the 'src' directory on your host to the web root in the container
+    ports:
+      - 8009:80
+
