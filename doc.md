@@ -4,40 +4,40 @@ In this article, I'll discuss:
 - What Content-Type: stream+json is
 - How to handle stream+json responses with PHP
 
-The sample code is fully open source and available here:
-https://github.com/karintomania/php-stream-example
+The sample code is fully open source and available here:  
+👉 [GitHub Repository](https://github.com/karintomania/php-stream-example)
 
-If you have docker compose installed on your machine, you can run the code without installing anything.
+If you have Docker Compose installed on your machine, you can run the code without installing anything extra.
 
 ## What is Content-Type: stream+json?
 
-Before we dive into coding, I'll quickly explain why stream+json exists. Often, you want to send large arrays of JSON via APIs. You could send this large array from the server all at once. When PHP receives it, PHP loads everything into memory.
+Before we dive into coding, let's quickly explore why `stream+json` exists. Often, you need to send large arrays of JSON via APIs. You could send this large array from the server all at once, but when PHP receives it, PHP loads everything into memory.
 
 While this method works, it can cause issues such as:
 - High memory consumption
-- Risk of timeout
+- Risk of timeout ⏳
 
 How to solve these problems?
 
-**💡Solution: Content-Type: stream+json**
-To address these problems, the `stream+json` content type is used. For this content type, the server sends a "stream" of data, which consists of lines of JSON in this case.
-See the GIF below, which shows how a server can send JSONs on a stream with Content-Type: stream+json.
+**💡Solution: Content-Type: stream+json**  
+To tackle these issues, the `stream+json` content type is used. For this content type, the server sends a "stream" of data, which consists of lines of JSON in this case.  
+See the GIF below, which shows how a server can send JSONs on a stream with Content-Type: stream+json.  
 [GIF of stream]
 
-As you can see, the server is sending JSON line-by-line.
-This format is called JSON Lines (or JSONL for short), which is a new-line-separated JSON. JSONL allows data to be processed line-by-line, making it easier to handle large JSON objects efficiently. 
+As you can see, the server is sending JSON line-by-line.  
+This format is called JSON Lines (or JSONL for short), which is a newline-separated JSON. JSONL allows data to be processed line-by-line, making it easier to handle large JSON objects efficiently. 
 Because each line is a valid JSON, PHP can start processing the object as it receives it, without waiting for the whole response.
 
 In summary, using Content-Type: stream+json allows the program to:
-- Start processing immediately without waiting for the entire response
+- Start processing immediately without waiting for the entire response ⏩
 - Use less memory by processing JSON one by one, instead of dealing with a massive array of JSON
 
 ## Receiving the Stream+JSON Response as a Stream with Guzzle
 
-Now, let's talk about how to handle a stream+json response.
+Now, let's talk about how to handle a `stream+json` response.
 
-Before diving into the implementation, it's important to clarify a common point of confusion:
-PHP has built-in functions called Streams. This stream refers to a way to manage resources like files or HTTP in a unified manner. However, the "stream" discussed in this article refers to HTTP responses using the `stream+json` content type.
+Before diving into the implementation, it's important to clarify a common point of confusion:  
+PHP has built-in functions called Streams. This stream refers to a way to manage resources like files or HTTP in a unified manner. However, the "stream" discussed in this article refers to HTTP responses using the `stream+json` content type.  
 More about PHP's built-in streams: [PHP Streams Documentation](https://www.php.net/manual/en/book.stream.php)
 
 Fortunately, the Guzzle library has a handy "stream" option to get the response as a stream. All you need to do is set this `'stream'` option to `true`.
@@ -53,7 +53,7 @@ $response = $client->get('http://localhost', ['stream' => true]);
 $stream = $response->getBody();
 ```
 
-If you run the code above, you will have the response as a stream, more specifically as a StreamInterface. StreamInterface is defined by PSR-7 as an interface for data streams. If you want to know more about this interface, see the link below for details:
+If you run the code above, you will have the response as a stream, more specifically as a `StreamInterface`. `StreamInterface` is defined by PSR-7 as an interface for data streams. If you want to know more about this interface, see the link below for details:  
 [StreamInterface Documentation](https://github.com/php-fig/http-message/blob/master/src/StreamInterface.php)
 
 One of the important methods of "StreamInterface" is the `read(int $length)` method, which allows you to retrieve content of the specified length. We will see how to handle the JSON stream line by line using this method in the next section.
@@ -131,19 +131,19 @@ This method returns a generator of JSON-decoded objects. It retrieves each line 
 This method processes the stream in chunks and identifies complete lines by searching for newline characters. It continues reading until the end of the file is reached, ensuring that all lines are processed.
 
 ### Note on `GuzzleHttp\Psr7\Utils::readLine` Method
-Guzzle offers a function like my StreamScanner.
+Guzzle offers a function like my StreamScanner.  
 https://github.com/guzzle/psr7/blob/2.7/src/Utils.php#L234
 
-This function, as the name suggests, read one line from the stream. The difference from the StreamScanner in this article is
-- It returns string, instead of Generator.
-- the implementation reads the stream 1 letter at a time.
+This function, as the name suggests, reads one line from the stream. The difference from the StreamScanner in this article is:
+- It returns a string, instead of a Generator.
+- The implementation reads the stream one character at a time.
 
-Because it reads the stream 1 letter by 1 letter instead of reading chunk, this function can be slow.
-I processed 100K JSONL with both implementation and the result is like below:
-StreamScanner: 0.049s
-Utils::readLine:0.416s
+Because it reads the stream one character at a time instead of reading chunks, this function can be slow.  
+I processed 100K JSONL with both implementations and the result is like below:  
+StreamScanner: 0.049s  
+Utils::readLine: 0.416s
 
-Utils::readLine is very useful when the file is not large or the speed is not your concern (like batch job, for example). Also, if you can't use Generator, you should use Utils::readLine.
+`Utils::readLine` is very useful when the file is not large or the speed is not your concern (like batch jobs, for example). Also, if you can't use Generators, you should use `Utils::readLine`.
 
 ## Testing the Implementation
 
@@ -164,7 +164,7 @@ Now you have the stream. If you are using Guzzle to make the request, you can mo
 
 The `stream+json` content type, utilizing the JSONL format, is a powerful solution for managing extensive HTTP responses. By employing streams and generators, you can create memory-efficient code capable of handling large data sets with ease.
 
-All of the sample code and more example are available in my GitHub repo:
-https://github.com/karintomania/php-stream-example
+All of the sample code and more examples are available in my GitHub repo:  
+👉 [GitHub Repository](https://github.com/karintomania/php-stream-example)
 
-I hope this article helps you. Happy coding!
+I hope this article helps you. Happy coding! 😊
