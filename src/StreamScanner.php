@@ -5,7 +5,7 @@ namespace StreamTest;
 use Psr\Http\Message\StreamInterface;
 use \Generator;
 
-class StreamHandler {
+class StreamScanner {
     private const int CHUNK_SIZE = 8192;
 
     /**
@@ -16,7 +16,7 @@ class StreamHandler {
     */
     public function __invoke(StreamInterface $stream): Generator
     {
-        foreach($this->scan($stream) as $line) {
+        foreach($this->nextLine($stream) as $line) {
             yield json_decode($line);
         }
     }
@@ -26,7 +26,7 @@ class StreamHandler {
      *
      * Read each line from the stream
      * */
-    private function scan(StreamInterface $stream): Generator
+    private function nextLine(StreamInterface $stream): Generator
     {
         $buffer = '';
 

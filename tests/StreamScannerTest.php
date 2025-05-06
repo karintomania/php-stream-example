@@ -4,16 +4,16 @@ namespace Tests;
 
 use GuzzleHttp\Psr7\Utils;
 use PHPUnit\Framework\TestCase;
-use StreamTest\StreamHandler;
+use StreamTest\StreamScanner;
 
-class StreamHandlerTest extends TestCase
+class StreamScannerTest extends TestCase
 {
     public function test_example() {
         // Mock HTTP stream with file stream
         $f = fopen(__DIR__ . '/data.json', 'r');
         $stream = Utils::streamFor($f);
 
-        $handler = new StreamHandler();
+        $handler = new StreamScanner();
 
         $counter = 1;
         foreach($handler->__invoke($stream) as $object) {
